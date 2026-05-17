@@ -649,89 +649,67 @@
         }
 
         .clause-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding: 0 1.5rem;
+        }
+
+        .clause-body.expanded {
+            max-height: 5000px;
             padding: 1.5rem;
+        }
+
+        /* 5-Border Immersive Debate Styling */
+        .debate-section {
+            border-left: 4px solid var(--border-color);
+            background: var(--section-bg);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 0.75rem 0.75rem 0;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 0.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 0.5rem;
         }
 
-        .courtroom-transcript {
-            border-left: 2px solid rgba(255,255,255,0.05);
-            padding-left: 1.5rem;
-            margin-top: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        .debate-section:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
 
-        .court-speech {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-        }
-
-        .court-avatar {
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 50%;
+        .debate-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .avatar-prosecutor {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .avatar-defender {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .avatar-judge {
-            background: rgba(59, 130, 246, 0.15);
-            color: #3b82f6;
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .speech-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .speech-speaker {
-            font-size: 0.85rem;
+            gap: 0.5rem;
+            font-family: 'Outfit', sans-serif;
             font-weight: 700;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
+            letter-spacing: 0.75px;
+            color: var(--header-color);
         }
 
-        .avatar-prosecutor + .speech-content .speech-speaker { color: #f87171; }
-        .avatar-defender + .speech-content .speech-speaker { color: #34d399; }
-        .avatar-judge + .speech-content .speech-speaker { color: #60a5fa; }
-
-        .speech-text {
+        .debate-text {
             font-size: 0.95rem;
             line-height: 1.5;
+            color: #cbd5e1;
         }
 
-        .quote-box {
-            background: rgba(0, 0, 0, 0.2);
-            border-left: 3px solid var(--primary);
-            padding: 0.75rem 1rem;
-            border-radius: 0 0.5rem 0.5rem 0;
-            font-family: 'JetBrains Mono', monospace;
+        .debate-meta {
             font-size: 0.85rem;
-            color: #cbd5e1;
-            line-height: 1.4;
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .segment-btn.active {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.3);
         }
 
         .verdict-stamp {
@@ -797,7 +775,7 @@
         }
 
         .chat-message {
-            max-width: 80%;
+            max-width: 85%;
             padding: 0.75rem 1.25rem;
             border-radius: 1rem;
             font-size: 0.95rem;
@@ -817,7 +795,6 @@
             color: var(--text-color);
             align-self: flex-start;
             border-bottom-left-radius: 0.25rem;
-            white-space: pre-line;
         }
 
         .chat-input-bar {
@@ -967,29 +944,47 @@
             </div>
         </div>
 
+        <!-- Language/View Control Bar -->
+        <div class="results-control-bar hidden" id="results-control-bar" style="display:none; justify-content:space-between; align-items:center; margin-bottom:1.5rem; background:rgba(255,255,255,0.02); border:1px solid var(--surface-border); padding:1rem 1.5rem; border-radius:1rem; backdrop-filter:blur(12px);">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <span style="font-weight:600; color:var(--text-muted); font-size:0.9rem;">DISPLAY MODE:</span>
+                <div class="segmented-control" style="display:flex; background:rgba(0,0,0,0.4); padding:0.25rem; border-radius:0.5rem; border:1px solid var(--surface-border);">
+                    <button class="segment-btn active" id="lang-btn-legal" onclick="switchLanguage('legal')" style="background:none; border:none; color:white; padding:0.4rem 1.2rem; font-size:0.85rem; font-weight:600; border-radius:0.35rem; cursor:pointer; transition:all 0.2s;">📜 Legal (English)</button>
+                    <button class="segment-btn" id="lang-btn-plain" onclick="switchLanguage('plain')" style="background:none; border:none; color:var(--text-muted); padding:0.4rem 1.2rem; font-size:0.85rem; font-weight:600; border-radius:0.35rem; cursor:pointer; transition:all 0.2s;">💡 Plain English</button>
+                    <button class="segment-btn" id="lang-btn-hindi" onclick="switchLanguage('hindi')" style="background:none; border:none; color:var(--text-muted); padding:0.4rem 1.2rem; font-size:0.85rem; font-weight:600; border-radius:0.35rem; cursor:pointer; transition:all 0.2s;">हिंदी (Hindi)</button>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:1rem; align-items:center;">
+                <button class="btn btn-outline" onclick="exportPDFReport()" style="padding: 0.5rem 1.2rem; font-size: 0.85rem; border-radius: 0.5rem; border-color: rgba(96,165,250,0.3); color:#60a5fa;">
+                    <span>📥 Download Full PDF Report</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Analysis Dashboard (Results View) -->
         <div class="results-section" id="results-section">
             
             <!-- Sidebar with Score Gauge -->
             <div class="results-sidebar">
                 <div class="glass-panel gauge-card">
-                    <h2>Safety Score</h2>
+                    <h2>Risk Score</h2>
                     <div class="gauge-outer">
                         <svg class="gauge-svg" width="180" height="180">
                             <circle class="gauge-bg" cx="90" cy="90" r="80"></circle>
-                            <circle class="gauge-fill" id="safety-gauge-fill" cx="90" cy="90" r="80"></circle>
+                            <circle class="gauge-fill" id="risk-gauge-fill" cx="90" cy="90" r="80"></circle>
                         </svg>
                         <div class="gauge-text">
-                            <span class="gauge-number" id="safety-score-val">0</span>
-                            <span class="gauge-label">Score Rating</span>
+                            <span class="gauge-number" id="risk-score-val">0</span>
+                            <span class="gauge-label">Risk Rating</span>
                         </div>
                     </div>
                     <div class="score-verdict" id="score-verdict-text">-</div>
-                    <div class="safety-rating" id="safety-rating-badge">-</div>
+                    <div class="safety-rating" id="risk-rating-badge">-</div>
                 </div>
 
                 <div class="glass-panel" style="padding: 1.5rem;">
-                    <h3 style="margin-bottom: 1rem;">Clause Risk Heatmap</h3>
+                    <h3 style="margin-bottom: 1rem;" id="heatmap-title">Clause Risk Heatmap</h3>
                     <div id="heatmap-list">
                         <!-- Filled dynamically -->
                     </div>
@@ -1016,15 +1011,15 @@
                 </div>
 
                 <!-- Expanded Courtroom Clause Debate -->
-                <h2>Simulated Courtroom Trial Transcripts</h2>
+                <h2 id="transcript-header">Simulated Courtroom Trial Transcripts</h2>
                 <div class="clauses-container" id="clauses-container">
                     <!-- Filled dynamically -->
                 </div>
 
                 <!-- Chat Panel -->
                 <div class="chat-section">
-                    <h2>💡 Ask Follow-up Legal Strategy Questions</h2>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Consult the Advisor Agent on how to handle specific pushbacks or custom alternatives.</p>
+                    <h2 id="chat-title">💡 Ask Follow-up Legal Strategy Questions</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;" id="chat-subtitle">Consult the Advisor Agent on how to handle specific pushbacks or custom alternatives.</p>
                     
                     <div class="chat-container">
                         <div class="chat-header">
@@ -1036,6 +1031,12 @@
                                 Hello! I've fully parsed this agreement's courtroom trial transcript. Ask me any follow-up questions about how to negotiate these terms or simulate a specific risk!
                             </div>
                         </div>
+                        
+                        <!-- Question Chips -->
+                        <div class="chat-chips" id="chat-chips" style="display:flex; gap:0.5rem; padding:0.6rem 1.2rem; overflow-x:auto; background:rgba(0,0,0,0.15); border-top:1px solid var(--surface-border);">
+                            <!-- Filled dynamically based on docType -->
+                        </div>
+
                         <div class="chat-input-bar">
                             <input type="text" class="chat-input" id="chat-input" placeholder="Type your follow-up negotiation question here..." onkeypress="handleChatKey(event)">
                             <button class="btn" onclick="sendChatMessage()">Send</button>
@@ -1052,6 +1053,9 @@
     <script>
         // Global State
         let currentDocumentText = "";
+        let currentSessionId = "";
+        let currentLang = "legal";
+        let translatedHindiData = null;
         let analysisData = {
             extractor: null,
             prosecutor: null,
@@ -1158,9 +1162,13 @@
 
                 const parseResult = await response.json();
                 currentDocumentText = parseResult.contract_text;
+                currentSessionId = parseResult.session_id;
+
+                // Render Customized follow-up Q&A recommended question chips
+                renderQuestionChips(docType);
 
                 // Start SSE Agent Stream Debate
-                initiateAgentDebate(docType, currentDocumentText);
+                initiateAgentDebate(docType, currentDocumentText, currentSessionId);
 
             } catch (err) {
                 alert(`Error processing contract: ${err.message}`);
@@ -1184,9 +1192,9 @@
         }
 
         // Establish SSE Connection for Live Agent debates
-        function initiateAgentDebate(docType, text) {
+        function initiateAgentDebate(docType, text, sessionId) {
             const encodedText = encodeURIComponent(text);
-            const eventSource = new EventSource(`/api/stream-analysis?doc_type=${docType}&contract_text=${encodedText}`);
+            const eventSource = new EventSource(`/api/stream-analysis?doc_type=${docType}&contract_text=${encodedText}&session_id=${sessionId}`);
 
             eventSource.onmessage = function(event) {
                 const packet = JSON.parse(event.data);
@@ -1248,10 +1256,106 @@
 
             eventSource.onerror = function() {
                 eventSource.close();
-                // If stream drops unexpectedly, just fail gracefully
                 alert("Connection lost during agent stream. Try loading a benchmark direct demo!");
                 resetApp();
             };
+        }
+
+        // Render recommended chips dynamically
+        function renderQuestionChips(docType) {
+            const chipsContainer = document.getElementById("chat-chips");
+            if (!chipsContainer) return;
+            chipsContainer.innerHTML = "";
+            
+            let chips = [];
+            if (docType === "employment") {
+                chips = [
+                    "How do I negotiate the non-compete down?",
+                    "Is the IP assignment standard?",
+                    "Can I ask for a mutual notice period?"
+                ];
+            } else if (docType === "rental") {
+                chips = [
+                    "What if the landlord refuses to repair mold?",
+                    "Is a $500 late fee legal?",
+                    "How do I protect my security deposit?"
+                ];
+            } else {
+                chips = [
+                    "Should I sign a perpetual NDA?",
+                    "How do I remove the $100k automatic damages?",
+                    "What exclusions should I ask for?"
+                ];
+            }
+            
+            chips.forEach(text => {
+                const chip = document.createElement("button");
+                chip.className = "demo-btn";
+                chip.style.margin = "0";
+                chip.style.whiteSpace = "nowrap";
+                chip.innerText = text;
+                chip.onclick = () => {
+                    document.getElementById("chat-input").value = text;
+                    sendChatMessage();
+                };
+                chipsContainer.appendChild(chip);
+            });
+        }
+
+        // Export beautifully compiled PDF Report from Reportlab
+        function exportPDFReport() {
+            if (!currentSessionId) {
+                alert("No active analysis session found.");
+                return;
+            }
+            window.open(`/api/export/pdf?session_id=${currentSessionId}`, "_blank");
+        }
+
+        // Multi-Language Tri-State segmented switch controller
+        async function switchLanguage(lang) {
+            if (lang === currentLang) return;
+            
+            // Remove active tags
+            document.querySelectorAll(".segment-btn").forEach(btn => btn.classList.remove("active"));
+            
+            if (lang === "legal") {
+                document.getElementById("lang-btn-legal").classList.add("active");
+                currentLang = "legal";
+                renderDashboard();
+            } else if (lang === "plain") {
+                document.getElementById("lang-btn-plain").classList.add("active");
+                currentLang = "plain";
+                renderDashboard();
+            } else if (lang === "hindi") {
+                document.getElementById("lang-btn-hindi").classList.add("active");
+                currentLang = "hindi";
+                
+                if (translatedHindiData) {
+                    renderDashboard();
+                } else {
+                    const hindiBtn = document.getElementById("lang-btn-hindi");
+                    const originalText = hindiBtn.innerText;
+                    hindiBtn.innerHTML = `<span class="spinner" style="width:0.8rem; height:0.8rem; border-width:2px; margin-right:0.3rem; vertical-align:middle;"></span> अनुवाद हो रहा है...`;
+                    
+                    try {
+                        const response = await fetch("/api/translate", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ session_id: currentSessionId, target_lang: "hi" })
+                        });
+                        
+                        if (!response.ok) throw new Error("Translation failed");
+                        translatedHindiData = await response.json();
+                        
+                        hindiBtn.innerText = originalText;
+                        renderDashboard();
+                    } catch (err) {
+                        hindiBtn.innerText = originalText;
+                        alert("Hindi translation failed or API key was configured incorrectly. Reverting to Legal English.");
+                        switchLanguage("legal");
+                    }
+                }
+            }
         }
 
         // Render dashboard once all agent steps are completed
@@ -1259,66 +1363,78 @@
             // Hide timeline loader
             document.getElementById("agent-timeline-container").classList.add("hidden");
             
+            // Show Control Bar
+            const ctrlBar = document.getElementById("results-control-bar");
+            ctrlBar.classList.remove("hidden");
+            ctrlBar.style.display = "flex";
+
             // Show main results
             const resultsSec = document.getElementById("results-section");
             resultsSec.style.display = "grid";
 
+            // Translate Static UI Labels
+            translateStaticUILabels();
+
+            // Determine active data source
+            const dataSrc = (currentLang === "hindi" && translatedHindiData) ? translatedHindiData : analysisData;
+            const judges = dataSrc.judge;
+            const extractor = dataSrc.extractor;
+            const prosecutor = dataSrc.prosecutor;
+            const defender = dataSrc.defender;
+            const advisor = dataSrc.advisor;
+
             // 1. Calculate Aggregate Document Risk Score
             let totalWeightedScore = 0;
             let count = 0;
-            const judges = analysisData.judge;
             
             for (const cid in judges) {
                 totalWeightedScore += parseFloat(judges[cid].score);
                 count++;
             }
             
-            // Map raw score out of 10 to a security rating out of 100
-            // Standard safety score: 100 - (average_risk * 10)
             const avgRisk = count > 0 ? (totalWeightedScore / count) : 0;
-            const safetyScore = Math.max(0, Math.round(100 - (avgRisk * 10)));
+            const riskScore = Math.max(0, Math.min(100, Math.round(avgRisk * 10)));
 
             // Animate Score Counter
-            animateScoreValue(0, safetyScore, 1500);
+            animateScoreValue(0, riskScore, 1000);
 
             // Animate Circle Gauge
-            const circle = document.getElementById("safety-gauge-fill");
-            // Circumference of radius 80 is 502
-            const offset = 502 - (502 * safetyScore) / 100;
+            const circle = document.getElementById("risk-gauge-fill");
+            const offset = 502 - (502 * riskScore) / 100;
             circle.style.strokeDashoffset = offset;
             
             // Set Gauge color based on severity
             let color = "var(--primary)";
             let verdict = "NEUTRAL";
-            if (safetyScore >= 80) {
+            if (riskScore <= 30) {
                 color = "var(--severity-low)";
-                verdict = "HIGHLY SECURE";
-                document.getElementById("safety-rating-badge").style.background = "var(--severity-low-glow)";
-                document.getElementById("safety-rating-badge").style.borderColor = "rgba(16,185,129,0.3)";
-                document.getElementById("safety-rating-badge").style.color = "var(--severity-low)";
-            } else if (safetyScore >= 60) {
+                verdict = (currentLang === "hindi") ? "अत्यधिक सुरक्षित" : "HIGHLY SECURE";
+                document.getElementById("risk-rating-badge").style.background = "var(--severity-low-glow)";
+                document.getElementById("risk-rating-badge").style.borderColor = "rgba(16,185,129,0.3)";
+                document.getElementById("risk-rating-badge").style.color = "var(--severity-low)";
+            } else if (riskScore <= 60) {
                 color = "var(--severity-med)";
-                verdict = "FAIR & REASONABLE";
-                document.getElementById("safety-rating-badge").style.background = "var(--severity-med-glow)";
-                document.getElementById("safety-rating-badge").style.borderColor = "rgba(234,179,8,0.3)";
-                document.getElementById("safety-rating-badge").style.color = "var(--severity-med)";
-            } else if (safetyScore >= 40) {
+                verdict = (currentLang === "hindi") ? "उचित और तर्कसंगत" : "FAIR & REASONABLE";
+                document.getElementById("risk-rating-badge").style.background = "var(--severity-med-glow)";
+                document.getElementById("risk-rating-badge").style.borderColor = "rgba(234,179,8,0.3)";
+                document.getElementById("risk-rating-badge").style.color = "var(--severity-med)";
+            } else if (riskScore <= 80) {
                 color = "var(--severity-high)";
-                verdict = "UNFAVORABLE / ONE-SIDED";
-                document.getElementById("safety-rating-badge").style.background = "var(--severity-high-glow)";
-                document.getElementById("safety-rating-badge").style.borderColor = "rgba(249,115,22,0.3)";
-                document.getElementById("safety-rating-badge").style.color = "var(--severity-high)";
+                verdict = (currentLang === "hindi") ? "अहितकर / एकतरफा" : "UNFAVORABLE / ONE-SIDED";
+                document.getElementById("risk-rating-badge").style.background = "var(--severity-high-glow)";
+                document.getElementById("risk-rating-badge").style.borderColor = "rgba(249,115,22,0.3)";
+                document.getElementById("risk-rating-badge").style.color = "var(--severity-high)";
             } else {
                 color = "var(--severity-critical)";
-                verdict = "HIGHLY EXPLOITATIVE";
-                document.getElementById("safety-rating-badge").style.background = "var(--severity-critical-glow)";
-                document.getElementById("safety-rating-badge").style.borderColor = "rgba(239,68,68,0.3)";
-                document.getElementById("safety-rating-badge").style.color = "var(--severity-critical)";
+                verdict = (currentLang === "hindi") ? "अत्यधिक शोषक" : "HIGHLY EXPLOITATIVE";
+                document.getElementById("risk-rating-badge").style.background = "var(--severity-critical-glow)";
+                document.getElementById("risk-rating-badge").style.borderColor = "rgba(239,68,68,0.3)";
+                document.getElementById("risk-rating-badge").style.color = "var(--severity-critical)";
             }
             circle.style.stroke = color;
             document.getElementById("score-verdict-text").innerText = verdict;
             document.getElementById("score-verdict-text").style.color = color;
-            document.getElementById("safety-rating-badge").innerText = analysisData.advisor.safety_rating;
+            document.getElementById("risk-rating-badge").innerText = advisor.risk_rating || advisor.safety_rating;
 
             // 2. Heatmap Category List
             const heatmapList = document.getElementById("heatmap-list");
@@ -1338,18 +1454,30 @@
 
             for (const catName in categories) {
                 const avgCatRisk = categories[catName].total / categories[catName].count;
-                const catScore = Math.round(avgCatRisk * 10); // 0-100 scale for category risk
+                const catScore = Math.round(avgCatRisk * 10);
                 
                 let barColor = "var(--severity-low)";
                 if (avgCatRisk > 8) barColor = "var(--severity-critical)";
                 else if (avgCatRisk > 6) barColor = "var(--severity-high)";
                 else if (avgCatRisk > 4) barColor = "var(--severity-med)";
 
+                let displayName = catName.replace('_', ' ');
+                if (currentLang === "hindi") {
+                    if (catName === "non_compete") displayName = "गैर-प्रतिस्पर्धा";
+                    else if (catName === "ip_ownership") displayName = "बौद्धिक संपदा स्वामित्व";
+                    else if (catName === "termination") displayName = "अनुबंध समाप्ति";
+                    else if (catName === "arbitration") displayName = "अनिवार्य मध्यस्थता";
+                    else if (catName === "data_privacy") displayName = "डेटा गोपनीयता";
+                    else if (catName === "penalties") displayName = "जुर्माना और दंड";
+                    else if (catName === "liability") displayName = "दायित्व सीमा";
+                    else if (catName === "auto_renewal") displayName = "सुरक्षा जमा";
+                }
+
                 const catRow = document.createElement("div");
                 catRow.style.marginBottom = "1rem";
                 catRow.innerHTML = `
                     <div class="category-score-row">
-                        <span style="text-transform: capitalize; font-weight: 500;">${catName.replace('_', ' ')}</span>
+                        <span style="text-transform: capitalize; font-weight: 500;">${displayName}</span>
                         <span style="font-weight: 700; color: ${barColor};">${avgCatRisk.toFixed(1)}/10</span>
                     </div>
                     <div class="score-bar-outer">
@@ -1360,88 +1488,207 @@
             }
 
             // 3. Render Advisor Playbook
-            document.getElementById("advisor-summary").innerText = analysisData.advisor.summary;
+            document.getElementById("advisor-summary").innerText = advisor.summary;
             
+            const rbTitle = document.querySelector(".playbook-card h3:nth-of-type(1)");
+            const nsTitle = document.querySelector(".playbook-card h3:nth-of-type(2)");
+            if (rbTitle && nsTitle) {
+                if (currentLang === "hindi") {
+                    rbTitle.innerText = "⚠️ मुख्य आलोचनात्मक लाल झंडे (Critical Red Flags)";
+                    nsTitle.innerText = "📝 सुझाया गया बातचीत स्क्रिप्ट (Negotiation Script)";
+                } else {
+                    rbTitle.innerText = "⚠️ Top Critical Red Flags";
+                    nsTitle.innerText = "📝 Suggested Negotiation Script";
+                }
+            }
+
             const redFlagsList = document.getElementById("red-flags-list");
             redFlagsList.innerHTML = "";
-            analysisData.advisor.top_red_flags.forEach(flag => {
+            advisor.top_red_flags.forEach(flag => {
                 const li = document.createElement("li");
                 li.innerText = flag;
                 redFlagsList.appendChild(li);
             });
 
-            document.getElementById("negotiation-playbook-script").innerText = analysisData.advisor.negotiation_playbook;
+            document.getElementById("negotiation-playbook-script").innerText = advisor.negotiation_playbook;
 
             // 4. Render Courtroom Clause Debate list
             const clausesContainer = document.getElementById("clauses-container");
             clausesContainer.innerHTML = "";
 
             analysisData.extractor.forEach(c => {
-                const p = analysisData.prosecutor[c.id];
-                const d = analysisData.defender[c.id];
+                const p = prosecutor[c.id];
+                const d = defender[c.id];
                 const j = judges[c.id];
+                const adv = advisor.clauses_advice ? advisor.clauses_advice[c.id] : null;
 
                 if (!p || !d || !j) return;
 
+                let clauseTitle = c.title;
+                if (currentLang === "hindi" && extractor) {
+                    const match = extractor.find(item => item.id === c.id);
+                    if (match) clauseTitle = match.title;
+                }
+
                 const sevClass = getSeverityBadgeClass(p.risk_severity);
-                const verdictClass = j.verdict === "Exploitative" ? "stamp-exploitative" : (j.verdict === "Unfavorable" ? "stamp-unfavorable" : "stamp-fair");
+                let severityLabel = p.risk_severity;
+                if (currentLang === "hindi") {
+                    if (severityLabel === "CRITICAL") severityLabel = "गंभीर (CRITICAL)";
+                    else if (severityLabel === "HIGH") severityLabel = "उच्च (HIGH)";
+                    else if (severityLabel === "MEDIUM") severityLabel = "मध्यम (MEDIUM)";
+                    else severityLabel = "कम (LOW)";
+                }
+
+                const stampLabel = j.verdict;
+                let verdictClass = "stamp-fair";
+                if (stampLabel.toLowerCase().includes("exploitative")) {
+                    verdictClass = "stamp-exploitative";
+                } else if (stampLabel.toLowerCase().includes("unfavorable") || stampLabel.toLowerCase().includes("one-sided") || stampLabel.toLowerCase().includes("negotiate")) {
+                    verdictClass = "stamp-unfavorable";
+                } else {
+                    verdictClass = "stamp-fair";
+                }
 
                 const card = document.createElement("div");
                 card.className = "clause-card";
+                
+                let catLabel = c.category.replace('_', ' ');
+                if (currentLang === "hindi") {
+                    if (c.category === "non_compete") catLabel = "गैर-प्रतिस्पर्धा";
+                    else if (c.category === "ip_ownership") catLabel = "बौद्धिक संपदा";
+                    else if (c.category === "termination") catLabel = "समाप्ति";
+                    else if (c.category === "arbitration") catLabel = "मध्यस्थता";
+                }
+
                 card.innerHTML = `
                     <div class="clause-header" onclick="toggleCardBody(this)">
                         <div style="display:flex; flex-direction:column; gap:0.25rem;">
-                            <span class="clause-title">${c.title}</span>
+                            <span class="clause-title">${clauseTitle}</span>
                             <div class="clause-meta">
-                                <span class="category-badge">${c.category.replace('_', ' ')}</span>
-                                <span class="severity-badge ${sevClass}">${p.risk_severity} RISK</span>
+                                <span class="category-badge">${catLabel}</span>
+                                <span class="severity-badge ${sevClass}">${severityLabel}</span>
                             </div>
                         </div>
                         <span style="font-size: 1.5rem; transition: transform 0.2s;" class="arrow-indicator">▼</span>
                     </div>
                     <div class="clause-body hidden">
-                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
-                            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Extracted Clause Wording:</span>
-                            <div class="quote-box">"${c.text}"</div>
-                        </div>
-                        
-                        <div class="courtroom-transcript">
-                            <div class="court-speech">
-                                <div class="court-avatar avatar-prosecutor">⚖️</div>
-                                <div class="speech-content">
-                                    <span class="speech-speaker">Prosecutor Agent</span>
-                                    <span class="speech-text">${p.prosecution_argument}</span>
-                                    <span class="speech-text" style="color: #f87171; font-style: italic; margin-top: 0.4rem;"><b>Worst Case:</b> ${p.worst_case_scenario}</span>
-                                </div>
-                            </div>
-
-                            <div class="court-speech">
-                                <div class="court-avatar avatar-defender">🛡️</div>
-                                <div class="speech-content">
-                                    <span class="speech-speaker">Defender Agent</span>
-                                    <span class="speech-text">${d.defense_argument}</span>
-                                    <span class="speech-text" style="color: #60a5fa; font-style: italic; margin-top: 0.4rem;"><b>Compromise Wording:</b> ${d.middle_ground_proposal}</span>
-                                </div>
-                            </div>
-
-                            <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 0.5rem 0;"></div>
-
-                            <div class="court-speech">
-                                <div class="court-avatar avatar-judge">⚖️</div>
-                                <div class="speech-content">
-                                    <span class="speech-speaker">Presiding Judge Verdict</span>
-                                    <span class="speech-text" style="font-weight: 500;">${j.judge_reasoning}</span>
-                                    <div style="display:flex; align-items:center; gap:1rem; margin-top:0.75rem;">
-                                        <div class="verdict-stamp ${verdictClass}">${j.verdict}</div>
-                                        <span style="font-weight: 700; font-size:1.1rem; color:#e2e8f0;">Court Score: <span style="color:#ef4444">${j.score}/10</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ${renderDebateCardBody(c, p, d, j, adv, verdictClass)}
                     </div>
                 `;
                 clausesContainer.appendChild(card);
             });
+        }
+
+        function translateStaticUILabels() {
+            const ratingTitle = document.querySelector(".gauge-card h2");
+            const heatmapTitle = document.getElementById("heatmap-title");
+            const playbookTitle = document.querySelector(".playbook-title");
+            const transcriptHeader = document.getElementById("transcript-header");
+            
+            const chatTitle = document.getElementById("chat-title");
+            const chatSubtitle = document.getElementById("chat-subtitle");
+
+            if (currentLang === "hindi") {
+                if (ratingTitle) ratingTitle.innerText = "दस्तावेज जोखिम स्तर";
+                if (heatmapTitle) heatmapTitle.innerText = "खंड जोखिम मानचित्र";
+                if (playbookTitle) playbookTitle.innerHTML = "💡 सलाहकार का बातचीत प्लेबुक";
+                if (transcriptHeader) transcriptHeader.innerText = "सिम्युलेटेड अदालती सुनवाई प्रतिलेख";
+                if (chatTitle) chatTitle.innerText = "💡 बातचीत रणनीति अनुवर्ती प्रश्न पूछें";
+                if (chatSubtitle) chatSubtitle.innerText = "विशिष्ट दबावों या कस्टम विकल्पों को संभालने के बारे में अधिकारों के सलाहकार से परामर्श लें।";
+            } else {
+                if (ratingTitle) ratingTitle.innerText = "Risk Score";
+                if (heatmapTitle) heatmapTitle.innerText = "Clause Risk Heatmap";
+                if (playbookTitle) playbookTitle.innerHTML = "💡 Advisor's Negotiation Playbook";
+                if (transcriptHeader) transcriptHeader.innerText = "Simulated Courtroom Trial Transcripts";
+                if (chatTitle) chatTitle.innerText = "💡 Ask Follow-up Legal Strategy Questions";
+                if (chatSubtitle) chatSubtitle.innerText = "Consult the Advisor Agent on how to handle specific pushbacks or custom alternatives.";
+            }
+        }
+
+        function renderDebateCardBody(c, p, d, j, adv, verdictClass) {
+            let html = "";
+            
+            // 1. Original Clause Text (Slate gray left border, HSL styled)
+            html += `
+                <div class="debate-section" style="--border-color: #64748b; --section-bg: rgba(100, 116, 139, 0.05); --header-color: #94a3b8;">
+                    <div class="debate-header">📜 ${currentLang === 'hindi' ? 'मूल खंड सामग्री (Original Clause)' : 'Original Clause Text'}</div>
+                    <div class="debate-text">"${c.text}"</div>
+                </div>
+            `;
+            
+            if (currentLang === "plain") {
+                // Plain English Mode: highlight plain English summaries and negotiation compromises
+                if (adv) {
+                    html += `
+                        <div class="debate-section" style="--border-color: #8b5cf6; --section-bg: rgba(139, 92, 246, 0.06); --header-color: #c084fc;">
+                            <div class="debate-header">💡 What This Means For You (Plain English)</div>
+                            <div class="debate-text" style="font-size: 1rem; color: #e2e8f0;">${adv.what_this_means}</div>
+                        </div>
+                        <div class="debate-section" style="--border-color: #10b981; --section-bg: rgba(16, 185, 129, 0.06); --header-color: #34d399;">
+                            <div class="debate-header">📝 Suggested Negotiation Wording</div>
+                            <div class="debate-text" style="font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: #a7f3d0; background: rgba(16,185,129,0.05); padding: 0.75rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(16,185,129,0.1); margin-top: 0.25rem;">
+                                ${adv.counter_proposal}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="debate-section" style="--border-color: #10b981; --section-bg: rgba(16, 185, 129, 0.06); --header-color: #34d399;">
+                            <div class="debate-header">🛡️ Suggested Compromise</div>
+                            <div class="debate-text" style="color: #a7f3d0;">${d.middle_ground_proposal}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Standard Courtroom Debate Transcript: 4-5 part sections
+                
+                // 2. Prosecutor Section (Red border)
+                html += `
+                    <div class="debate-section" style="--border-color: #ef4444; --section-bg: rgba(239, 68, 68, 0.04); --header-color: #f87171;">
+                        <div class="debate-header">⚖️ ${currentLang === 'hindi' ? 'अभियोजक का तर्क (Prosecution Audit)' : 'Prosecutor Argues (Risk Audit)'}</div>
+                        <div class="debate-text">${p.prosecution_argument}</div>
+                        <div class="debate-meta" style="color: #f87171; font-weight: 600;">⚠️ ${currentLang === 'hindi' ? 'सबसे खराब स्थिति (Worst Case)' : 'Worst-Case Scenario'}: ${p.worst_case_scenario}</div>
+                    </div>
+                `;
+                
+                // 3. Defender Section (Green border)
+                html += `
+                    <div class="debate-section" style="--border-color: #10b981; --section-bg: rgba(16, 185, 129, 0.04); --header-color: #34d399;">
+                        <div class="debate-header">🛡️ ${currentLang === 'hindi' ? 'बचाव पक्ष का तर्क (Defense Context)' : 'Defender Counters (Business Context)'}</div>
+                        <div class="debate-text">${d.defense_argument}</div>
+                        <div class="debate-meta" style="color: #60a5fa; font-weight: 600;">💡 ${currentLang === 'hindi' ? 'उचित समझौता (Compromise)' : 'Industry Compromise'}: ${d.middle_ground_proposal}</div>
+                    </div>
+                `;
+                
+                // 4. Judge Section (Blue border)
+                let scoreLabel = currentLang === 'hindi' ? 'अदालत अंक' : 'Court Score';
+                let verdictTitle = currentLang === 'hindi' ? 'न्यायाधीश का निर्णय' : "Judge's Verdict";
+                html += `
+                    <div class="debate-section" style="--border-color: #3b82f6; --section-bg: rgba(59, 130, 246, 0.04); --header-color: #60a5fa;">
+                        <div class="debate-header">📊 ${verdictTitle}</div>
+                        <div class="debate-text" style="font-weight: 500; color: #e2e8f0;">${j.judge_reasoning}</div>
+                        <div style="display:flex; align-items:center; gap:1.25rem; margin-top:0.4rem;">
+                            <div class="verdict-stamp ${verdictClass}">${j.verdict}</div>
+                            <span style="font-weight:700; font-size:1.1rem; color:#e2e8f0;">${scoreLabel}: <span style="color:#ef4444">${j.score}/10</span></span>
+                        </div>
+                    </div>
+                `;
+                
+                // 5. Advisor Section (Purple border)
+                if (adv) {
+                    html += `
+                        <div class="debate-section" style="--border-color: #7c3aed; --section-bg: rgba(124, 58, 237, 0.04); --header-color: #c084fc;">
+                            <div class="debate-header">💡 ${currentLang === 'hindi' ? 'आपके लिए इसका अर्थ (Advisor)' : 'What This Means For You'}</div>
+                            <div class="debate-text" style="color: #e2e8f0;">${adv.what_this_means}</div>
+                            <div class="debate-text" style="font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #a5b4fc; background: rgba(124,58,237,0.05); padding: 0.5rem 0.75rem; border-radius: 0.35rem; border: 1px solid rgba(124,58,237,0.1); margin-top: 0.4rem;">
+                                <b>${currentLang === 'hindi' ? 'प्रस्तावित स्क्रिप्ट' : 'Script'}:</b> ${adv.counter_proposal}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            return html;
         }
 
         function toggleCardBody(headerEl) {
@@ -1449,9 +1696,11 @@
             const arrow = headerEl.querySelector(".arrow-indicator");
             if (body.classList.contains("hidden")) {
                 body.classList.remove("hidden");
+                body.classList.add("expanded");
                 arrow.style.transform = "rotate(180deg)";
             } else {
                 body.classList.add("hidden");
+                body.classList.remove("expanded");
                 arrow.style.transform = "rotate(0deg)";
             }
         }
@@ -1464,7 +1713,7 @@
         }
 
         function animateScoreValue(start, end, duration) {
-            const obj = document.getElementById("safety-score-val");
+            const obj = document.getElementById("risk-score-val");
             let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
@@ -1477,7 +1726,34 @@
             window.requestAnimationFrame(step);
         }
 
-        // Q&A Chat interaction
+        // Robust markdown parsing helper for conversational chatbot responses
+        function parseMarkdown(text) {
+            let html = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            
+            html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+            html = html.replace(/`(.*?)`/g, "<code>$1</code>");
+            
+            html = html.split('\n').map(line => {
+                if (line.trim().startsWith('- ')) {
+                    return `<li>${line.trim().substring(2)}</li>`;
+                }
+                if (line.trim().startsWith('* ')) {
+                    return `<li>${line.trim().substring(2)}</li>`;
+                }
+                return line;
+            }).join('\n');
+            
+            html = html.replace(/(<li>.*?<\/li>)/gs, "<ul>$1</ul>");
+            html = html.replace(/<\/ul>\n<ul>/g, "\n");
+            html = html.replace(/\n/g, "<br/>");
+            
+            return html;
+        }
+
+        // Q&A Chat interaction with markdown parsing & session tracking
         async function sendChatMessage() {
             const input = document.getElementById("chat-input");
             const message = input.value.trim();
@@ -1485,7 +1761,6 @@
 
             input.value = "";
             
-            // Add user message to UI
             const messagesContainer = document.getElementById("chat-messages");
             const userMsgDiv = document.createElement("div");
             userMsgDiv.className = "chat-message message-user";
@@ -1493,19 +1768,18 @@
             messagesContainer.appendChild(userMsgDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Generate AI thinking message
             const thinkingDiv = document.createElement("div");
             thinkingDiv.className = "chat-message message-ai";
-            thinkingDiv.innerHTML = `<span class="spinner" style="width: 1rem; height: 1rem;"></span> Advisor is consulting courtroom files...`;
+            thinkingDiv.innerHTML = `<span class="spinner" style="width: 1rem; height: 1rem; border-width: 2px; vertical-align: middle; margin-right: 0.3rem;"></span> Advisor is consulting courtroom files...`;
             messagesContainer.appendChild(thinkingDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Prepare Payload
             const payload = {
                 message: message,
                 history: chatHistory,
                 contract_text: currentDocumentText,
-                analysis_results: analysisData
+                analysis_results: analysisData,
+                session_id: currentSessionId
             };
 
             try {
@@ -1519,17 +1793,14 @@
 
                 const result = await response.json();
                 
-                // Remove thinking
                 messagesContainer.removeChild(thinkingDiv);
 
-                // Add real response
                 const aiMsgDiv = document.createElement("div");
                 aiMsgDiv.className = "chat-message message-ai";
-                aiMsgDiv.innerText = result.response;
+                aiMsgDiv.innerHTML = parseMarkdown(result.response);
                 messagesContainer.appendChild(aiMsgDiv);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-                // Update Local History
                 chatHistory.push({ role: "user", content: message });
                 chatHistory.push({ role: "advisor", content: result.response });
 
