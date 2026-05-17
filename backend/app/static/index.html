@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEXGUARD — AI Rights & Contract Intelligence System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #05070c;
+            --surface-color: rgba(13, 20, 35, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.15);
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            
+            /* Severity Colors */
+            --severity-low: #10b981;
+            --severity-low-glow: rgba(16, 185, 129, 0.15);
+            --severity-med: #eab308;
+            --severity-med-glow: rgba(234, 179, 8, 0.15);
+            --severity-high: #f97316;
+            --severity-high-glow: rgba(249, 115, 22, 0.15);
+            --severity-critical: #ef4444;
+            --severity-critical-glow: rgba(239, 68, 68, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2.5rem;
+            border-bottom: 1px solid var(--surface-border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 7, 12, 0.8);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            font-weight: 800;
+            font-family: 'Outfit';
+            font-size: 1.25rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            background: linear-gradient(to right, #ffffff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-badge {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Banner */
+        .hero {
+            text-align: center;
+            margin-bottom: 3.5rem;
+            margin-top: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #ffffff, #c7d2fe, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 750px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.6;
+        }
+
+        /* Card Panels */
+        .glass-panel {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(16px);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Upload Area */
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 900px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .drag-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.01);
+            min-height: 250px;
+        }
+
+        .drag-zone:hover, .drag-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.03);
+        }
+
+        .upload-icon {
+            width: 4rem;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .drag-zone:hover .upload-icon {
+            transform: translateY(-5px);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .paste-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--surface-border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            color: var(--text-color);
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select {
+            background: rgba(13, 20, 35, 0.9);
+            border: 1px solid var(--surface-border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-color);
+            outline: none;
+            font-weight: 500;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Demo Buttons Area */
+        .demo-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .demo-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-color);
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .demo-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Real-Time Agent Stream Timeline */
+        .agent-timeline-container {
+            margin-bottom: 3rem;
+            display: none;
+        }
+
+        .agent-timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        .agent-timeline::before {
+            content: '';
+            position: absolute;
+            top: 1.75rem;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 18%;
+        }
+
+        .timeline-icon {
+            width: 3.5rem;
+            height: 3.5rem;
+            background: #111827;
+            border: 2px solid var(--surface-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.5s ease;
+        }
+
+        .timeline-step.active .timeline-icon {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: scale(1.1);
+            background: #1e3a8a;
+        }
+
+        .timeline-step.complete .timeline-icon {
+            border-color: #10b981;
+            background: #064e3b;
+            color: #34d399;
+        }
+
+        .timeline-name {
+            margin-top: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .timeline-step.active .timeline-name {
+            color: var(--text-color);
+        }
+
+        .timeline-step.complete .timeline-name {
+            color: #34d399;
+        }
+
+        .timeline-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 0.25rem;
+            max-width: 120px;
+        }
+
+        .agent-status-panel {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--surface-border);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pulse-loader {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse-animation 1.5s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { transform: scale(0.9); opacity: 0.4; }
+            50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 10px var(--primary); }
+            100% { transform: scale(0.9); opacity: 0.4; }
+        }
+
+        /* Results Screen Layout */
+        .results-section {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar Gauge */
+        .results-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .gauge-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .gauge-outer {
+            width: 180px;
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.05);
+            stroke-width: 12;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 12;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 2s cubic-bezier(0.1, 0.8, 0.2, 1), stroke 2s;
+        }
+
+        .gauge-text {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gauge-number {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Outfit';
+            line-height: 1;
+        }
+
+        .gauge-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .score-verdict {
+            font-size: 1.4rem;
+            font-family: 'Outfit';
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+
+        .safety-rating {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        /* Clause Heatmap List */
+        .category-score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .score-bar-outer {
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 999px;
+            width: 100%;
+            margin-top: 0.25rem;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 999px;
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        /* Main Results Dashboard */
+        .results-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .playbook-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+        }
+
+        .playbook-title {
+            color: #a5b4fc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Clause List Cards */
+        .clauses-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .clause-card {
+            border: 1px solid var(--surface-border);
+            border-radius: 1rem;
+            background: rgba(13, 20, 35, 0.4);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .clause-card:hover {
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(13, 20, 35, 0.6);
+        }
+
+        .clause-header {
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--surface-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .clause-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .category-badge {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.35rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-low-badge {
+            background: var(--severity-low-glow);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--severity-low);
+        }
+
+        .severity-med-badge {
+            background: var(--severity-med-glow);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            color: var(--severity-med);
+        }
+
+        .severity-high-badge {
+            background: var(--severity-high-glow);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            color: var(--severity-high);
+        }
+
+        .severity-critical-badge {
+            background: var(--severity-critical-glow);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--severity-critical);
+        }
+
+        .clause-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .clause-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .courtroom-transcript {
+            border-left: 2px solid rgba(255,255,255,0.05);
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .court-speech {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .court-avatar {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar-prosecutor {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .avatar-defender {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .avatar-judge {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .speech-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .speech-speaker {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .avatar-prosecutor + .speech-content .speech-speaker { color: #f87171; }
+        .avatar-defender + .speech-content .speech-speaker { color: #34d399; }
+        .avatar-judge + .speech-content .speech-speaker { color: #60a5fa; }
+
+        .speech-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .quote-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid var(--primary);
+            padding: 0.75rem 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .verdict-stamp {
+            border: 2px dashed #ef4444;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 0.35rem;
+            text-transform: uppercase;
+            font-family: 'Outfit';
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            transform: rotate(-2deg);
+            align-self: flex-start;
+        }
+
+        .verdict-stamp.stamp-fair {
+            border-color: #10b981;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .verdict-stamp.stamp-unfavorable {
+            border-color: #eab308;
+            color: #eab308;
+            background: rgba(234, 179, 8, 0.05);
+        }
+
+        /* Interactive Chat Panel */
+        .chat-section {
+            border-top: 1px solid var(--surface-border);
+            padding-top: 2rem;
+            margin-top: 3rem;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            border: 1px solid var(--surface-border);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            background: rgba(13, 20, 35, 0.3);
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--surface-border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-messages {
+            height: 350px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 0.75rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message-user {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .message-ai {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+            white-space: pre-line;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--surface-border);
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--surface-border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary);
+        }
+
+        /* General utils */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.05);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Code Block formatting */
+        pre {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-icon">🛡️</div>
+            <div>
+                <span class="logo-text"><b>LEX</b>GUARD</span>
+                <span class="logo-badge">Multi-Agent Courtroom</span>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-outline" onclick="resetApp()">Reset System</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- Hero Title Banner -->
+        <div class="hero" id="hero-banner">
+            <h1>Defend Your Digital Rights</h1>
+            <p>LexGuard's adversarial multi-agent system runs a simulated courtroom trial on your agreements. Detect hidden liabilities, exploitative locks, and unfair terms before you click "Agree".</p>
+        </div>
+
+        <!-- Ingestion Panel -->
+        <div class="glass-panel upload-section" id="upload-panel">
+            <div class="drag-zone" id="drag-zone">
+                <div class="upload-icon">📥</div>
+                <h3>Drag & Drop Agreement</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Supports PDF, DOCX, or Raw Text files</p>
+                <input type="file" id="file-input" class="hidden" accept=".pdf,.docx,.txt">
+                <button class="btn btn-outline" style="margin-top: 0.5rem;">Browse Files</button>
+            </div>
+            
+            <div class="paste-zone">
+                <h3>Or Paste Document / Terms</h3>
+                <textarea id="text-input" placeholder="Paste the terms of service, offer letter, rental agreement, or policy here..."></textarea>
+                <div class="form-row">
+                    <select id="doc-type">
+                        <option value="employment">Employment Offer Letter / Contract</option>
+                        <option value="rental">Apartment Lease / Rental Agreement</option>
+                        <option value="nda">Non-Disclosure Agreement (NDA)</option>
+                    </select>
+                    <button class="btn" id="analyze-btn" onclick="startAnalysis()">
+                        <span>Courtroom Analysis</span>
+                        <span>⚖️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demos Shortcut -->
+        <div class="demo-bar" id="demo-bar">
+            <span>Or test immediately with a premium benchmark sample:</span>
+            <button class="demo-btn" onclick="loadDemo('employment')">💼 Employment Offer</button>
+            <button class="demo-btn" onclick="loadDemo('rental')">🏠 Lease Agreement</button>
+            <button class="demo-btn" onclick="loadDemo('nda')">🔒 Perpetual NDA</button>
+        </div>
+
+        <!-- Real-Time Agent Stream Progress Panel -->
+        <div class="glass-panel agent-timeline-container" id="agent-timeline-container">
+            <div class="form-row" style="justify-content: space-between;">
+                <h2>Adversarial Agent Debate Live Feed</h2>
+                <div id="loader-icon" class="spinner"></div>
+            </div>
+            
+            <div class="agent-timeline">
+                <div class="timeline-step" id="step-extractor">
+                    <div class="timeline-icon">🔍</div>
+                    <div class="timeline-name">Extractor</div>
+                    <div class="timeline-desc">Structure Parser</div>
+                </div>
+                <div class="timeline-step" id="step-prosecutor">
+                    <div class="timeline-icon">⚖️</div>
+                    <div class="timeline-name">Prosecutor</div>
+                    <div class="timeline-desc">Adversarial Auditor</div>
+                </div>
+                <div class="timeline-step" id="step-defender">
+                    <div class="timeline-icon">🛡️</div>
+                    <div class="timeline-name">Defender</div>
+                    <div class="timeline-desc">Context & Standards</div>
+                </div>
+                <div class="timeline-step" id="step-judge">
+                    <div class="timeline-icon">📊</div>
+                    <div class="timeline-name">Judge</div>
+                    <div class="timeline-desc">Weighted Score</div>
+                </div>
+                <div class="timeline-step" id="step-advisor">
+                    <div class="timeline-icon">💡</div>
+                    <div class="timeline-name">Advisor</div>
+                    <div class="timeline-desc">Plain Language</div>
+                </div>
+            </div>
+
+            <div class="agent-status-panel">
+                <div class="pulse-loader"></div>
+                <span id="agent-status-text" style="font-weight: 500; font-size: 0.95rem;">Preparing agents for contract review...</span>
+            </div>
+        </div>
+
+        <!-- Analysis Dashboard (Results View) -->
+        <div class="results-section" id="results-section">
+            
+            <!-- Sidebar with Score Gauge -->
+            <div class="results-sidebar">
+                <div class="glass-panel gauge-card">
+                    <h2>Safety Score</h2>
+                    <div class="gauge-outer">
+                        <svg class="gauge-svg" width="180" height="180">
+                            <circle class="gauge-bg" cx="90" cy="90" r="80"></circle>
+                            <circle class="gauge-fill" id="safety-gauge-fill" cx="90" cy="90" r="80"></circle>
+                        </svg>
+                        <div class="gauge-text">
+                            <span class="gauge-number" id="safety-score-val">0</span>
+                            <span class="gauge-label">Score Rating</span>
+                        </div>
+                    </div>
+                    <div class="score-verdict" id="score-verdict-text">-</div>
+                    <div class="safety-rating" id="safety-rating-badge">-</div>
+                </div>
+
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <h3 style="margin-bottom: 1rem;">Clause Risk Heatmap</h3>
+                    <div id="heatmap-list">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Panel containing Red Flags & Courtroom Debates -->
+            <div class="results-main">
+                
+                <!-- Playbook Card -->
+                <div class="glass-panel playbook-card">
+                    <h2 class="playbook-title">💡 Advisor's Negotiation Playbook</h2>
+                    <p id="advisor-summary" style="line-height: 1.6; margin-bottom: 1.5rem; color: #e2e8f0;"></p>
+                    
+                    <h3 style="color: #f87171; margin-bottom: 0.75rem; font-size: 1.1rem;">⚠️ Top Critical Red Flags</h3>
+                    <ul id="red-flags-list" style="margin-left: 1.5rem; margin-bottom: 1.5rem; line-height: 1.6; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <!-- Filled dynamically -->
+                    </ul>
+
+                    <h3 style="color: #60a5fa; margin-bottom: 0.75rem; font-size: 1.1rem;">📝 Suggested Negotiation Script</h3>
+                    <div class="quote-box" style="white-space: pre-wrap; max-height: 200px; overflow-y: auto;" id="negotiation-playbook-script">
+                        <!-- Wording -->
+                    </div>
+                </div>
+
+                <!-- Expanded Courtroom Clause Debate -->
+                <h2>Simulated Courtroom Trial Transcripts</h2>
+                <div class="clauses-container" id="clauses-container">
+                    <!-- Filled dynamically -->
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="chat-section">
+                    <h2>💡 Ask Follow-up Legal Strategy Questions</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Consult the Advisor Agent on how to handle specific pushbacks or custom alternatives.</p>
+                    
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <span style="font-size: 1.2rem;">💬</span>
+                            <span style="font-weight: 600;">LexGuard Rights Advisor</span>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message message-ai">
+                                Hello! I've fully parsed this agreement's courtroom trial transcript. Ask me any follow-up questions about how to negotiate these terms or simulate a specific risk!
+                            </div>
+                        </div>
+                        <div class="chat-input-bar">
+                            <input type="text" class="chat-input" id="chat-input" placeholder="Type your follow-up negotiation question here..." onkeypress="handleChatKey(event)">
+                            <button class="btn" onclick="sendChatMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Global State
+        let currentDocumentText = "";
+        let analysisData = {
+            extractor: null,
+            prosecutor: null,
+            defender: null,
+            judge: null,
+            advisor: null
+        };
+        let chatHistory = [];
+
+        // File drag and drop logic
+        const dragZone = document.getElementById("drag-zone");
+        const fileInput = document.getElementById("file-input");
+
+        dragZone.addEventListener("click", () => fileInput.click());
+        dragZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dragZone.classList.add("dragover");
+        });
+        dragZone.addEventListener("dragleave", () => {
+            dragZone.classList.remove("dragover");
+        });
+        dragZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dragZone.classList.remove("dragover");
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            dragZone.querySelector("h3").innerText = file.name;
+            dragZone.querySelector("p").innerText = `File ready: ${(file.size / 1024).toFixed(1)} KB`;
+        }
+
+        // Shortcut benchmarks
+        const DEMO_TEXTS = {
+            employment: "Acme Corp Employment Offer Letter. This agreement includes a 5-year non-competition clause covering a 500-mile radius. Acme Corp retains 100% of all intellectual property created by the employee at any time, even outside working hours. Acme Corp may terminate the employee immediately at any time without notice or severance, while the employee must give 90 days notice. All disputes must be settled via binding individual arbitration in Delaware, waiving all rights to jury trial.",
+            rental: "Landlord Rental Agreement. Rent is due on the 1st. Landlord may enter the premises at any hour without notice for inspection. Late payment incurs a $500 penalty fee on day 2. Landlord is not responsible for any repairs, plumbing leaks, mold, or electrical hazards; tenant waives all rights to withhold rent. Landlord retains the full security deposit as an automatic cleaning fee upon move out, regardless of condition.",
+            nda: "Non-Disclosure Agreement. This agreement shall remain in effect perpetually. Recipient agrees to pay $100,000 in automatic liquidated damages for any breach, without requiring proof of actual harm. All information disclosed, including publicly available info, is considered confidential. Recipient agrees that disclosing party is entitled to immediate injunctions without posting bond."
+        };
+
+        function loadDemo(type) {
+            document.getElementById("text-input").value = DEMO_TEXTS[type];
+            document.getElementById("doc-type").value = type;
+            startAnalysis();
+        }
+
+        function resetApp() {
+            window.location.reload();
+        }
+
+        // Start Courtroom Multi-Agent Analysis Pipeline
+        async function startAnalysis() {
+            const file = fileInput.files[0];
+            const textContent = document.getElementById("text-input").value;
+            const docType = document.getElementById("doc-type").value;
+
+            if (!file && !textContent) {
+                alert("Please upload a file or paste some agreement text first!");
+                return;
+            }
+
+            // Hide Upload and Demo bars
+            document.getElementById("upload-panel").classList.add("hidden");
+            document.getElementById("demo-bar").classList.add("hidden");
+            document.getElementById("hero-banner").classList.add("hidden");
+            
+            // Show Agent Stream Timeline
+            const timelineContainer = document.getElementById("agent-timeline-container");
+            timelineContainer.style.display = "block";
+            
+            // Reset timeline steps
+            document.querySelectorAll(".timeline-step").forEach(step => {
+                step.className = "timeline-step";
+            });
+
+            // Step 1: Pre-process file / text ingestion
+            updateStatusText("🔄 Extractor is reading and preparing document content...", "extractor");
+            
+            const formData = new FormData();
+            if (file) {
+                formData.append("file", file);
+            } else {
+                formData.append("text_content", textContent);
+            }
+            formData.append("doc_type", docType);
+
+            try {
+                const response = await fetch("/api/analyze", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || "Ingestion parsing failed.");
+                }
+
+                const parseResult = await response.json();
+                currentDocumentText = parseResult.contract_text;
+
+                // Start SSE Agent Stream Debate
+                initiateAgentDebate(docType, currentDocumentText);
+
+            } catch (err) {
+                alert(`Error processing contract: ${err.message}`);
+                resetApp();
+            }
+        }
+
+        function updateStatusText(text, activeStepId) {
+            document.getElementById("agent-status-text").innerText = text;
+            
+            if (activeStepId) {
+                document.querySelectorAll(".timeline-step").forEach(step => {
+                    if (step.id === `step-${activeStepId}`) {
+                        step.classList.add("active");
+                    } else if (step.classList.contains("active")) {
+                        step.classList.remove("active");
+                        step.classList.add("complete");
+                    }
+                });
+            }
+        }
+
+        // Establish SSE Connection for Live Agent debates
+        function initiateAgentDebate(docType, text) {
+            const encodedText = encodeURIComponent(text);
+            const eventSource = new EventSource(`/api/stream-analysis?doc_type=${docType}&contract_text=${encodedText}`);
+
+            eventSource.onmessage = function(event) {
+                const packet = JSON.parse(event.data);
+                
+                if (packet.step === "init") {
+                    updateStatusText(packet.message, "extractor");
+                } 
+                else if (packet.step === "extractor") {
+                    if (packet.status === "working") {
+                        updateStatusText(packet.message, "extractor");
+                    } else {
+                        analysisData.extractor = packet.data;
+                        updateStatusText("✅ Document structure extracted. Activating Prosecutor...", "prosecutor");
+                    }
+                } 
+                else if (packet.step === "prosecutor") {
+                    if (packet.status === "working") {
+                        updateStatusText(packet.message, "prosecutor");
+                    } else {
+                        analysisData.prosecutor = packet.data;
+                        updateStatusText("✅ Prosecutor allegations submitted. Activating Defender...", "defender");
+                    }
+                } 
+                else if (packet.step === "defender") {
+                    if (packet.status === "working") {
+                        updateStatusText(packet.message, "defender");
+                    } else {
+                        analysisData.defender = packet.data;
+                        updateStatusText("✅ Defender industry context added. Summoning the Presiding Judge...", "judge");
+                    }
+                } 
+                else if (packet.step === "judge") {
+                    if (packet.status === "working") {
+                        updateStatusText(packet.message, "judge");
+                    } else {
+                        analysisData.judge = packet.data;
+                        updateStatusText("✅ Final Judgements declared. Formatting plain-language legal Advisor...", "advisor");
+                    }
+                } 
+                else if (packet.step === "advisor") {
+                    if (packet.status === "working") {
+                        updateStatusText(packet.message, "advisor");
+                    } else {
+                        analysisData.advisor = packet.data;
+                        
+                        // Terminate SSE
+                        eventSource.close();
+                        
+                        // Render full results dashboard
+                        renderDashboard();
+                    }
+                }
+                else if (packet.step === "error") {
+                    alert(packet.message);
+                    eventSource.close();
+                    resetApp();
+                }
+            };
+
+            eventSource.onerror = function() {
+                eventSource.close();
+                // If stream drops unexpectedly, just fail gracefully
+                alert("Connection lost during agent stream. Try loading a benchmark direct demo!");
+                resetApp();
+            };
+        }
+
+        // Render dashboard once all agent steps are completed
+        function renderDashboard() {
+            // Hide timeline loader
+            document.getElementById("agent-timeline-container").classList.add("hidden");
+            
+            // Show main results
+            const resultsSec = document.getElementById("results-section");
+            resultsSec.style.display = "grid";
+
+            // 1. Calculate Aggregate Document Risk Score
+            let totalWeightedScore = 0;
+            let count = 0;
+            const judges = analysisData.judge;
+            
+            for (const cid in judges) {
+                totalWeightedScore += parseFloat(judges[cid].score);
+                count++;
+            }
+            
+            // Map raw score out of 10 to a security rating out of 100
+            // Standard safety score: 100 - (average_risk * 10)
+            const avgRisk = count > 0 ? (totalWeightedScore / count) : 0;
+            const safetyScore = Math.max(0, Math.round(100 - (avgRisk * 10)));
+
+            // Animate Score Counter
+            animateScoreValue(0, safetyScore, 1500);
+
+            // Animate Circle Gauge
+            const circle = document.getElementById("safety-gauge-fill");
+            // Circumference of radius 80 is 502
+            const offset = 502 - (502 * safetyScore) / 100;
+            circle.style.strokeDashoffset = offset;
+            
+            // Set Gauge color based on severity
+            let color = "var(--primary)";
+            let verdict = "NEUTRAL";
+            if (safetyScore >= 80) {
+                color = "var(--severity-low)";
+                verdict = "HIGHLY SECURE";
+                document.getElementById("safety-rating-badge").style.background = "var(--severity-low-glow)";
+                document.getElementById("safety-rating-badge").style.borderColor = "rgba(16,185,129,0.3)";
+                document.getElementById("safety-rating-badge").style.color = "var(--severity-low)";
+            } else if (safetyScore >= 60) {
+                color = "var(--severity-med)";
+                verdict = "FAIR & REASONABLE";
+                document.getElementById("safety-rating-badge").style.background = "var(--severity-med-glow)";
+                document.getElementById("safety-rating-badge").style.borderColor = "rgba(234,179,8,0.3)";
+                document.getElementById("safety-rating-badge").style.color = "var(--severity-med)";
+            } else if (safetyScore >= 40) {
+                color = "var(--severity-high)";
+                verdict = "UNFAVORABLE / ONE-SIDED";
+                document.getElementById("safety-rating-badge").style.background = "var(--severity-high-glow)";
+                document.getElementById("safety-rating-badge").style.borderColor = "rgba(249,115,22,0.3)";
+                document.getElementById("safety-rating-badge").style.color = "var(--severity-high)";
+            } else {
+                color = "var(--severity-critical)";
+                verdict = "HIGHLY EXPLOITATIVE";
+                document.getElementById("safety-rating-badge").style.background = "var(--severity-critical-glow)";
+                document.getElementById("safety-rating-badge").style.borderColor = "rgba(239,68,68,0.3)";
+                document.getElementById("safety-rating-badge").style.color = "var(--severity-critical)";
+            }
+            circle.style.stroke = color;
+            document.getElementById("score-verdict-text").innerText = verdict;
+            document.getElementById("score-verdict-text").style.color = color;
+            document.getElementById("safety-rating-badge").innerText = analysisData.advisor.safety_rating;
+
+            // 2. Heatmap Category List
+            const heatmapList = document.getElementById("heatmap-list");
+            heatmapList.innerHTML = "";
+            
+            const categories = {};
+            analysisData.extractor.forEach(c => {
+                const j = judges[c.id];
+                if (j) {
+                    if (!categories[c.category]) {
+                        categories[c.category] = { total: 0, count: 0 };
+                    }
+                    categories[c.category].total += parseFloat(j.score);
+                    categories[c.category].count++;
+                }
+            });
+
+            for (const catName in categories) {
+                const avgCatRisk = categories[catName].total / categories[catName].count;
+                const catScore = Math.round(avgCatRisk * 10); // 0-100 scale for category risk
+                
+                let barColor = "var(--severity-low)";
+                if (avgCatRisk > 8) barColor = "var(--severity-critical)";
+                else if (avgCatRisk > 6) barColor = "var(--severity-high)";
+                else if (avgCatRisk > 4) barColor = "var(--severity-med)";
+
+                const catRow = document.createElement("div");
+                catRow.style.marginBottom = "1rem";
+                catRow.innerHTML = `
+                    <div class="category-score-row">
+                        <span style="text-transform: capitalize; font-weight: 500;">${catName.replace('_', ' ')}</span>
+                        <span style="font-weight: 700; color: ${barColor};">${avgCatRisk.toFixed(1)}/10</span>
+                    </div>
+                    <div class="score-bar-outer">
+                        <div class="score-bar-fill" style="width: ${catScore}%; background: ${barColor}"></div>
+                    </div>
+                `;
+                heatmapList.appendChild(catRow);
+            }
+
+            // 3. Render Advisor Playbook
+            document.getElementById("advisor-summary").innerText = analysisData.advisor.summary;
+            
+            const redFlagsList = document.getElementById("red-flags-list");
+            redFlagsList.innerHTML = "";
+            analysisData.advisor.top_red_flags.forEach(flag => {
+                const li = document.createElement("li");
+                li.innerText = flag;
+                redFlagsList.appendChild(li);
+            });
+
+            document.getElementById("negotiation-playbook-script").innerText = analysisData.advisor.negotiation_playbook;
+
+            // 4. Render Courtroom Clause Debate list
+            const clausesContainer = document.getElementById("clauses-container");
+            clausesContainer.innerHTML = "";
+
+            analysisData.extractor.forEach(c => {
+                const p = analysisData.prosecutor[c.id];
+                const d = analysisData.defender[c.id];
+                const j = judges[c.id];
+
+                if (!p || !d || !j) return;
+
+                const sevClass = getSeverityBadgeClass(p.risk_severity);
+                const verdictClass = j.verdict === "Exploitative" ? "stamp-exploitative" : (j.verdict === "Unfavorable" ? "stamp-unfavorable" : "stamp-fair");
+
+                const card = document.createElement("div");
+                card.className = "clause-card";
+                card.innerHTML = `
+                    <div class="clause-header" onclick="toggleCardBody(this)">
+                        <div style="display:flex; flex-direction:column; gap:0.25rem;">
+                            <span class="clause-title">${c.title}</span>
+                            <div class="clause-meta">
+                                <span class="category-badge">${c.category.replace('_', ' ')}</span>
+                                <span class="severity-badge ${sevClass}">${p.risk_severity} RISK</span>
+                            </div>
+                        </div>
+                        <span style="font-size: 1.5rem; transition: transform 0.2s;" class="arrow-indicator">▼</span>
+                    </div>
+                    <div class="clause-body hidden">
+                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Extracted Clause Wording:</span>
+                            <div class="quote-box">"${c.text}"</div>
+                        </div>
+                        
+                        <div class="courtroom-transcript">
+                            <div class="court-speech">
+                                <div class="court-avatar avatar-prosecutor">⚖️</div>
+                                <div class="speech-content">
+                                    <span class="speech-speaker">Prosecutor Agent</span>
+                                    <span class="speech-text">${p.prosecution_argument}</span>
+                                    <span class="speech-text" style="color: #f87171; font-style: italic; margin-top: 0.4rem;"><b>Worst Case:</b> ${p.worst_case_scenario}</span>
+                                </div>
+                            </div>
+
+                            <div class="court-speech">
+                                <div class="court-avatar avatar-defender">🛡️</div>
+                                <div class="speech-content">
+                                    <span class="speech-speaker">Defender Agent</span>
+                                    <span class="speech-text">${d.defense_argument}</span>
+                                    <span class="speech-text" style="color: #60a5fa; font-style: italic; margin-top: 0.4rem;"><b>Compromise Wording:</b> ${d.middle_ground_proposal}</span>
+                                </div>
+                            </div>
+
+                            <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 0.5rem 0;"></div>
+
+                            <div class="court-speech">
+                                <div class="court-avatar avatar-judge">⚖️</div>
+                                <div class="speech-content">
+                                    <span class="speech-speaker">Presiding Judge Verdict</span>
+                                    <span class="speech-text" style="font-weight: 500;">${j.judge_reasoning}</span>
+                                    <div style="display:flex; align-items:center; gap:1rem; margin-top:0.75rem;">
+                                        <div class="verdict-stamp ${verdictClass}">${j.verdict}</div>
+                                        <span style="font-weight: 700; font-size:1.1rem; color:#e2e8f0;">Court Score: <span style="color:#ef4444">${j.score}/10</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                clausesContainer.appendChild(card);
+            });
+        }
+
+        function toggleCardBody(headerEl) {
+            const body = headerEl.nextElementSibling;
+            const arrow = headerEl.querySelector(".arrow-indicator");
+            if (body.classList.contains("hidden")) {
+                body.classList.remove("hidden");
+                arrow.style.transform = "rotate(180deg)";
+            } else {
+                body.classList.add("hidden");
+                arrow.style.transform = "rotate(0deg)";
+            }
+        }
+
+        function getSeverityBadgeClass(sev) {
+            if (sev === "CRITICAL") return "severity-critical-badge";
+            if (sev === "HIGH") return "severity-high-badge";
+            if (sev === "MEDIUM") return "severity-med-badge";
+            return "severity-low-badge";
+        }
+
+        function animateScoreValue(start, end, duration) {
+            const obj = document.getElementById("safety-score-val");
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Q&A Chat interaction
+        async function sendChatMessage() {
+            const input = document.getElementById("chat-input");
+            const message = input.value.trim();
+            if (!message) return;
+
+            input.value = "";
+            
+            // Add user message to UI
+            const messagesContainer = document.getElementById("chat-messages");
+            const userMsgDiv = document.createElement("div");
+            userMsgDiv.className = "chat-message message-user";
+            userMsgDiv.innerText = message;
+            messagesContainer.appendChild(userMsgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Generate AI thinking message
+            const thinkingDiv = document.createElement("div");
+            thinkingDiv.className = "chat-message message-ai";
+            thinkingDiv.innerHTML = `<span class="spinner" style="width: 1rem; height: 1rem;"></span> Advisor is consulting courtroom files...`;
+            messagesContainer.appendChild(thinkingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Prepare Payload
+            const payload = {
+                message: message,
+                history: chatHistory,
+                contract_text: currentDocumentText,
+                analysis_results: analysisData
+            };
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Chat service down");
+
+                const result = await response.json();
+                
+                // Remove thinking
+                messagesContainer.removeChild(thinkingDiv);
+
+                // Add real response
+                const aiMsgDiv = document.createElement("div");
+                aiMsgDiv.className = "chat-message message-ai";
+                aiMsgDiv.innerText = result.response;
+                messagesContainer.appendChild(aiMsgDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                // Update Local History
+                chatHistory.push({ role: "user", content: message });
+                chatHistory.push({ role: "advisor", content: result.response });
+
+            } catch (err) {
+                messagesContainer.removeChild(thinkingDiv);
+                const errorDiv = document.createElement("div");
+                errorDiv.className = "chat-message message-ai";
+                errorDiv.innerText = "Apologies, the advisor connection dropped. Try asking a standard negotiation strategy like 'how to ask' or 'email'.";
+                messagesContainer.appendChild(errorDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        function handleChatKey(event) {
+            if (event.key === "Enter") {
+                sendChatMessage();
+            }
+        }
+    </script>
+</body>
+</html>
