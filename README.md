@@ -188,3 +188,20 @@ LexGuard provides pre-loaded, premium benchmark agreements. Simply click one of 
 - Native PDF processing via Gemini multimodal capabilities
 - Structured JSON outputs leveraging Gemini's schema enforcement
 - Hindi translation via Gemini multilingual reasoning
+
+## ☁️ Google Cloud Services Used
+- **Google Gemini 2.0 Flash** — 5 multi-agent reasoning workflows
+- **Google Cloud Run** — Serverless deployment (asia-south1)
+- **Google Cloud Build** — Automated container builds
+- **Google Artifact Registry** — Container image storage
+- **Google Cloud Logging** — Application observability
+
+## ♿ Accessibility Features
+- Trilingual: English / Plain English / हिंदी (Hindi)
+- WCAG 2.1 considerations: semantic HTML, ARIA labels
+- Color-coded severity (Critical/High/Medium/Low)
+- Mobile-responsive dark theme (4.5:1 contrast)
+- Reading-level adaptation for non-legal users
+
+## 🧪 Testing
+Smoke tests in `backend/tests/`. Run: `pytest backend/tests/ -v`
